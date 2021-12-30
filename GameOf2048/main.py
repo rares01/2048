@@ -55,20 +55,45 @@ class GameOf2048:
 
     def new_move(self, move):
         for i in range(n):
-            row_pos = self.matrix[i, :]  # every number from the row
+            if move in 'lr':
+                row_pos = self.matrix[i, :]  # every number from the row
+            else:
+                row_pos = self.matrix[:, i]  # every number from the col
+
+            switch = False
+            if move in 'rd':
+                switch = True
+                row_pos = row_pos[::-1]  # we flip the list
+            # why we flip ? It is easy: when we take the numbers in horizontal way
             numbers = self.get_numbers(row_pos)
 
             copy = np.zeros_like(row_pos)
             copy[:len(numbers)] = numbers
-            self.matrix[i, :] = copy  # moving everything to left
+
+            if switch:
+                copy = copy[::-1]
+
+            if move in 'lr':
+                self.matrix[i, :] = copy
+            else :
+                self.matrix[:, i] = copy
+
+
+    def play(self):
+        self.putANewNumber(k=2)
+        while True:
+            print(self.matrix)
+            cmd = input()
+            if cmd == 'q':
+                break
+            past_matrix = self.matrix.copy()
+            self.new_move(cmd)
+            if all((self.matrix == past_matrix).flatten()):
+                continue
+            self.putANewNumber()
 
 
 if __name__ == '__main__':
     difficulty = str(input())
     start = GameOf2048(difficulty)
-    start.putANewNumber(k=2) # firstly we take 2 poistions becuase that  is how the game starts
-    print(start)
-    start.putANewNumber(k=2)
-    print(start)
-    start.new_move(move='l')
-    print(start)
+    start.play()
