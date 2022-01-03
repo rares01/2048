@@ -2,6 +2,8 @@ import random
 import pygame
 from pygame.locals import *
 import numpy as np
+from tkinter import messagebox
+from tkinter import *
 
 colors = {
     'backgorund': (189, 172, 161),
@@ -21,18 +23,14 @@ colors = {
 }
 
 
-# n mai mare pcia sus jos
-# m mai mare pica drpt stanga
-
 class GameOf2048:
     a = 0
-
-    def __init__(self, diff):
+    difficulty = ""
+    def __init__(self):
         self.n = 4
-        self.m = 5
+        self.m = 4
         self.matrix = np.zeros((self.n, self.m), dtype=int)
         self.spacing = 10
-        self.difficulty = diff
         self.w = 500
         self.h = 500
         pygame.init()
@@ -116,7 +114,7 @@ class GameOf2048:
             if move in 'lr':
                 row_pos = self.matrix[i, :]  # every number from the row
                 ok = 1
-            else :
+            else:
                 break
             switch = False
             if move in 'rd':
@@ -186,6 +184,9 @@ class GameOf2048:
                         return 'r'
 
     def play(self):
+
+        self.difficulty = self.meniu()
+
         self.putANewNumber(k=2)
         while True:
             print(self.matrix)
@@ -196,18 +197,104 @@ class GameOf2048:
                 break
             past_matrix = self.matrix.copy()
             self.new_move(cmd)
-            # if all((self.matrix == past_matrix).flatten()):
-            # continue
 
             if self.isOver():
-                print("Game over!")
-                break
-            self.putANewNumber()
+                self.inializeBox()
 
+            if not all((self.matrix == past_matrix).flatten()):
+                self.putANewNumber()
 
+    def inializeBox(self):
+        window = Tk()
+        window.eval('tk::PlaceWindow %s center' % window.winfo_toplevel())
+        window.withdraw()
+        if messagebox.askyesno('Question', 'You LOST! Do you want to restart the game?') == True:
+            self.matrix = np.zeros((self.n, self.m), dtype=int)
+            self.putANewNumber(k=1)
+            self.a = 0
+        else:
+            pygame.quit()
+
+        window.deiconify()
+        window.destroy()
+        window.quit()
+
+    def meniu(self):
+
+        # white color
+        global mouse
+        color = (255, 255, 255)
+
+        # light shade of the button
+        color_light = (170, 170, 170)
+
+        # dark shade of the button
+        color_dark = (100, 100, 100)
+
+        width = self.screen.get_width()
+
+        height = self.screen.get_height()
+
+        textForEasy = self.myFont.render('Easy', True, color)
+        textForMedium = self.myFont.render('Medium', True, color)
+        textForHard = self.myFont.render('Hard', True, color)
+
+        while True:
+
+            for ev in pygame.event.get():
+
+                if ev.type == pygame.QUIT:
+                    pygame.quit()
+
+                if ev.type == pygame.MOUSEBUTTONDOWN:
+
+                    # Easy button
+                    if width / 2 - 80 <= mouse[0] <= width / 2 + 60 and height / 2 - 80 <= mouse[1] <= height / 2 - 40:
+                        return "Easy"
+
+                    # Medium button
+                    if width / 2 - 80 <= mouse[0] <= width / 2 + 60 and height / 2 <= mouse[1] <= height / 2 + 40:
+                        return "Medium"
+
+                    if width / 2 - 80 <= mouse[0] <= width / 2 + 60 and height / 2 + 80 <= mouse[1] <= height / 2 + 120:
+                        return "Hard"
+
+            self.screen.fill((60, 25, 60))
+
+            # stores the coordinates as a tuple
+            mouse = pygame.mouse.get_pos()
+
+            # changing the lighting to every button depends if it is hovered or not
+
+            # Easy button
+            if width / 2 - 80 <= mouse[0] <= width / 2 + 60 and height / 2 - 80 <= mouse[1] <= height / 2 - 40:
+                pygame.draw.rect(self.screen, color_light, [width / 2 - 80, height / 2 - 80, 140, 40])
+
+            else:
+                pygame.draw.rect(self.screen, color_dark, [width / 2 - 80, height / 2 - 80, 140, 40])
+
+            # Medium button
+            if width / 2 - 80 <= mouse[0] <= width / 2 + 60 and height / 2 <= mouse[1] <= height / 2 + 40:
+                pygame.draw.rect(self.screen, color_light, [width / 2 - 80, height / 2, 140, 40])
+
+            else:
+                pygame.draw.rect(self.screen, color_dark, [width / 2 - 80, height / 2, 140, 40])
+
+            # Hard button
+            if width / 2 - 80 <= mouse[0] <= width / 2 + 60 and height / 2 + 80 <= mouse[1] <= height / 2 + 120:
+                pygame.draw.rect(self.screen, color_light, [width / 2 - 80, height / 2 + 80, 140, 40])
+
+            else:
+                pygame.draw.rect(self.screen, color_dark, [width / 2 - 80, height / 2 + 80, 140, 40])
+
+            # text in buttons
+            self.screen.blit(textForEasy, (width / 2 - 50, height / 2 - 80))
+            self.screen.blit(textForMedium, (width / 2 - 65, height / 2))
+            self.screen.blit(textForHard, (width / 2 - 50, height / 2 + 80))
+            pygame.display.flip()
 
 
 if __name__ == '__main__':
-    difficulty = str(input())
-    start = GameOf2048(difficulty)
+
+    start = GameOf2048()
     start.play()
