@@ -4,6 +4,7 @@ from pygame.locals import *
 import numpy as np
 from tkinter import messagebox
 from tkinter import *
+import sys
 
 colors = {
     'backgorund': (189, 172, 161),
@@ -26,6 +27,7 @@ colors = {
 class GameOf2048:
     a = 0
     difficulty = ""
+
     def __init__(self):
         self.n = 4
         self.m = 4
@@ -185,7 +187,11 @@ class GameOf2048:
 
     def play(self):
 
-        self.difficulty = self.meniu()
+        check = self.meniu()
+        if check == 'q':
+            sys.exit()
+        else:
+            self.difficulty = check
 
         self.putANewNumber(k=2)
         while True:
@@ -213,7 +219,7 @@ class GameOf2048:
             self.putANewNumber(k=1)
             self.a = 0
         else:
-            pygame.quit()
+            sys.exit()
 
         window.deiconify()
         window.destroy()
@@ -244,7 +250,7 @@ class GameOf2048:
             for ev in pygame.event.get():
 
                 if ev.type == pygame.QUIT:
-                    pygame.quit()
+                    return 'q'
 
                 if ev.type == pygame.MOUSEBUTTONDOWN:
 
@@ -295,6 +301,5 @@ class GameOf2048:
 
 
 if __name__ == '__main__':
-
     start = GameOf2048()
     start.play()
