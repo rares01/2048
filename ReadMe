@@ -1,5 +1,3 @@
 Am adaugat schimbarea. Am folosit doar un input box care sa preia numerele si un mesaj care sa specifice cum sa fie scrise in casuta. Functioneaza. 
 Al doilea commit a fost ca sa fixez inputurile trimise: sa nu fie caractere si sa fie numere in anumite intervale, daca nu se vor pune valori default. 
-@settings {
-  font-size: 100;
-}
+
