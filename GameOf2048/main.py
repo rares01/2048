@@ -122,7 +122,7 @@ class GameOf2048:
             if move in 'rd':
                 switch = True
                 row_pos = row_pos[::-1]  # we flip the list
-            # why we flip ? It is easy: when we take the numbers in horizontal way
+            # why we flip ? It is easy: when we need the numbers in the opposite way
             numbers = self.get_numbers(row_pos)
 
             copy = np.zeros_like(row_pos)
@@ -138,12 +138,11 @@ class GameOf2048:
             for i in range(self.m):
                 if move in 'du':
                     row_pos = self.matrix[:, i]  # every number from the col
-
                 switch = False
                 if move in 'rd':
                     switch = True
                     row_pos = row_pos[::-1]  # we flip the list
-                # why we flip ? It is easy: when we take the numbers in horizontal way
+                # why we flip ? It is easy: when we need the numbers in the opposite way
                 numbers = self.get_numbers(row_pos)
 
                 copy = np.zeros_like(row_pos)
@@ -173,7 +172,6 @@ class GameOf2048:
                 if event.type == KEYDOWN:
 
                     if event.key == K_w:
-                        print(1)
                         return 'u'
 
                     if event.key == K_s:
@@ -216,8 +214,9 @@ class GameOf2048:
         window.withdraw()
         if messagebox.askyesno('Question', 'You LOST! Do you want to restart the game?') == True:
             self.matrix = np.zeros((self.n, self.m), dtype=int)
-            self.putANewNumber(k=1)
             self.a = 0
+            self.putANewNumber(k=1)
+
         else:
             sys.exit()
 
@@ -230,7 +229,6 @@ class GameOf2048:
         # white color
         global mouse
         color = (255, 255, 255)
-
         # light shade of the button
         color_light = (170, 170, 170)
 
@@ -245,6 +243,21 @@ class GameOf2048:
         textForMedium = self.myFont.render('Medium', True, color)
         textForHard = self.myFont.render('Hard', True, color)
 
+        font = pygame.font.Font(None, 32)
+        input_box = pygame.Rect(190, 90, 140, 32)
+        color_inactive = pygame.Color('lightskyblue3')
+        color_active = pygame.Color('dodgerblue2')
+        color = color_inactive
+        active = False
+        text = ''
+
+        font_nou = pygame.font.Font(None, 24)
+        text_to_show = font_nou.render("Insert the numbers like this : number,number then press enter", True, color)
+
+        textRect = text_to_show.get_rect()
+
+        # set the center of the rectangular object.
+        textRect.center = (width // 2 , height // 2 - 190)
         while True:
 
             for ev in pygame.event.get():
@@ -254,6 +267,12 @@ class GameOf2048:
 
                 if ev.type == pygame.MOUSEBUTTONDOWN:
 
+                    if input_box.collidepoint(ev.pos):
+                        # Toggle the active variable.
+                        active = not active
+                    else:
+                        active = False
+                    color = color_active if active else color_inactive
                     # Easy button
                     if width / 2 - 80 <= mouse[0] <= width / 2 + 60 and height / 2 - 80 <= mouse[1] <= height / 2 - 40:
                         return "Easy"
@@ -265,9 +284,28 @@ class GameOf2048:
                     if width / 2 - 80 <= mouse[0] <= width / 2 + 60 and height / 2 + 80 <= mouse[1] <= height / 2 + 120:
                         return "Hard"
 
-            self.screen.fill((60, 25, 60))
+                if ev.type == pygame.KEYDOWN:
+                    if active:
+                        if ev.key == pygame.K_RETURN:
 
-            # stores the coordinates as a tuple
+                            self.n = int(text[0])
+                            self.m = int(text[2])
+                            self.matrix = np.zeros((self.n, self.m), dtype=int)
+                            text = ''
+
+                        elif ev.key == pygame.K_BACKSPACE:
+                            text = text[:-1]
+                        else:
+                            text += ev.unicode
+
+            self.screen.fill((60, 25, 60))
+            self.screen.blit(text_to_show, textRect)
+            txt_surface = font.render(text, True, color)
+            # Resize the box if the text is too long.
+            input_box.w = max(100, txt_surface.get_width() + 10)
+            self.screen.blit(txt_surface, (input_box.x + 5, input_box.y + 5))
+            pygame.draw.rect(self.screen, color, input_box, 2)
+
             mouse = pygame.mouse.get_pos()
 
             # changing the lighting to every button depends if it is hovered or not
