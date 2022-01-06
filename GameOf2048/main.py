@@ -257,7 +257,7 @@ class GameOf2048:
         textRect = text_to_show.get_rect()
 
         # set the center of the rectangular object.
-        textRect.center = (width // 2 , height // 2 - 190)
+        textRect.center = (width // 2, height // 2 - 190)
         while True:
 
             for ev in pygame.event.get():
@@ -287,10 +287,23 @@ class GameOf2048:
                 if ev.type == pygame.KEYDOWN:
                     if active:
                         if ev.key == pygame.K_RETURN:
-
-                            self.n = int(text[0])
-                            self.m = int(text[2])
-                            self.matrix = np.zeros((self.n, self.m), dtype=int)
+                            if (('A' <= text[0] <= 'Z') or  ('a' <= text[0] <= 'z')) or (('A' <= text[2] <= 'Z') or  ('a' <= text[2] <= 'z')):
+                                print("Nu ati pus numere in casuta! Reincercati!")
+                            else:
+                                if len(text) > 3:
+                                    print("Prea multe argumente!")
+                                else:
+                                    if int(text[0]) < 8 and int(text[2]) < 8:
+                                        self.n = int(text[0])
+                                        self.m = int(text[2])
+                                        if int(text[0]) < 4:
+                                            print("Numar prea mic se va pune 4 default!")
+                                            self.n = 4
+                                        if int(text[2]) < 4:
+                                            print("Numar prea mic se va pune 4 default!")
+                                            self.m = 4
+                                        self.matrix = np.zeros((self.n, self.m), dtype=int)
+                                        print("Ati modificat cu succes!")
                             text = ''
 
                         elif ev.key == pygame.K_BACKSPACE:
